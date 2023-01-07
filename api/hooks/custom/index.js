@@ -1,5 +1,13 @@
 /**
  * @description :: The conventional "custom" hook.  Extends this app with custom server-start-time and request-time logic.
+ * @explanation :: 
+ * This is a custom hook in a Sails.js application. A hook in Sails is a module that extends the core functionality of the framework by adding custom logic that runs at      specific points in the Sails lifecycle.
+ * The custom hook in this example is intended to add custom server-start-time and request-time logic to the application. It defines an initialize function that runs when the Sails app loads/lifts.
+ * The initialize function first logs a message to the console to indicate that the hook is initializing. It then checks the configuration for Stripe and Sendgrid (for billing and emails) to make sure that important configuration values have been set. If any of these values are missing, it logs a warning message to the console and sets the enableBillingFeatures config key to false.
+ * After the organics hook has finished initializing, the initialize function configures the Stripe and Sendgrid packs with any available credentials. It also sets up Stripe webhooks to receive events from the Stripe API and sets up an HTTP route to handle these webhooks.
+ * Finally, the initialize function sets up a cron job to send emails to users on a regular basis and registers an action to send email to users on demand.
+ * I hope this helps to clarify the purpose of this code. Let me know if you have any further questions.
+* 
  * @docs        :: https://sailsjs.com/docs/concepts/extending-sails/hooks
  */
 
@@ -309,15 +317,3 @@ will be disabled and/or hidden in the UI.
     },
   };
 };
-
-// This is a custom hook in a Sails.js application. A hook in Sails is a module that extends the core functionality of the framework by adding custom logic that runs at specific points in the Sails lifecycle.
-
-// The custom hook in this example is intended to add custom server-start-time and request-time logic to the application. It defines an initialize function that runs when the Sails app loads/lifts.
-
-// The initialize function first logs a message to the console to indicate that the hook is initializing. It then checks the configuration for Stripe and Sendgrid (for billing and emails) to make sure that important configuration values have been set. If any of these values are missing, it logs a warning message to the console and sets the enableBillingFeatures config key to false.
-
-// After the organics hook has finished initializing, the initialize function configures the Stripe and Sendgrid packs with any available credentials. It also sets up Stripe webhooks to receive events from the Stripe API and sets up an HTTP route to handle these webhooks.
-
-// Finally, the initialize function sets up a cron job to send emails to users on a regular basis and registers an action to send email to users on demand.
-
-// I hope this helps to clarify the purpose of this code. Let me know if you have any further questions.

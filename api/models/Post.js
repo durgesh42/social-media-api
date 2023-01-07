@@ -20,5 +20,6 @@ module.exports = {
     id: { type: 'string', columnName: '_id' },
     title: { type: 'string', columnName: 'title' },
     body: { type: 'string', columnName: 'body' },
+    user: { model: 'user', columnName: 'user' },
   },
 };

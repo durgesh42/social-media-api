@@ -42,5 +42,5 @@ module.exports.security = {
    *                                                                           *
    ****************************************************************************/
 
-  csrf: true,
+  csrf: false, // I make this False so that I can make a post/put request to login route
 };
