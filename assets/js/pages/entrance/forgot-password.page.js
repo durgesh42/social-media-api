@@ -7,15 +7,19 @@ parasails.registerPage('forgot-password', {
     syncing: false,
 
     // Form data
-    formData: { /* … */ },
+    formData: {
+      /* … */
+    },
 
     // For tracking client-side validation errors in our form.
     // > Has property set to `true` for each invalid property in `formData`.
-    formErrors: { /* … */ },
+    formErrors: {
+      /* … */
+    },
 
     // Form rules
     formRules: {
-      emailAddress: {required: true, isEmail: true},
+      emailAddress: { required: true, isEmail: true },
     },
 
     // Server error state for the form
@@ -28,10 +32,10 @@ parasails.registerPage('forgot-password', {
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
-  beforeMount: function() {
+  beforeMount: function () {
     //…
   },
-  mounted: async function() {
+  mounted: async function () {
     //…
   },
 
@@ -39,11 +43,9 @@ parasails.registerPage('forgot-password', {
   //  ║║║║ ║ ║╣ ╠╦╝╠═╣║   ║ ║║ ║║║║╚═╗
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
-
-    submittedForm: async function() {
+    submittedForm: async function () {
       // If it worked, show the success message.
       this.cloudSuccess = true;
     },
-
-  }
+  },
 });

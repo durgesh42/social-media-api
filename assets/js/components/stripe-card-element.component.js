@@ -18,10 +18,10 @@ parasails.registerComponent('stripeCardElement', {
   props: [
     'stripePublishableKey',
     'isErrored',
-    'errorMessage',//« optional custom error message to display
-    'value',//« the v-model passed in.
+    'errorMessage', //« optional custom error message to display
+    'value', //« the v-model passed in.
     'busy',
-    'showExisting',// « whether to show the existing card info passed into `v-model`
+    'showExisting', // « whether to show the existing card info passed into `v-model`
   ],
   //  ╔╦╗╔═╗╦═╗╦╔═╦ ╦╔═╗
   //  ║║║╠═╣╠╦╝╠╩╗║ ║╠═╝
@@ -43,7 +43,7 @@ parasails.registerComponent('stripeCardElement', {
   //  ╔═╗╔╦╗╔═╗╔╦╗╔═╗
   //  ╚═╗ ║ ╠═╣ ║ ║╣
   //  ╚═╝ ╩ ╩ ╩ ╩ ╚═╝
-  data: function (){
+  data: function () {
     return {
       isSyncing: false,
       isValidated: false,
@@ -59,15 +59,21 @@ parasails.registerComponent('stripeCardElement', {
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
-  beforeMount: function() {
+  beforeMount: function () {
     // Initialize an instance of Stripe "elements", which we'll pass into
     // our <stripe-element> component instances.
     // (We also save an instance of `stripe` for use below.)
     this._stripe = Stripe(this.stripePublishableKey);
     this._elements = this._stripe.elements();
   },
-  mounted: function (){
-    if(this.showExisting && _.isObject(this.value) && this.value.stripeToken && this.value.billingCardBrand && this.value.billingCardLast4) {
+  mounted: function () {
+    if (
+      this.showExisting &&
+      _.isObject(this.value) &&
+      this.value.stripeToken &&
+      this.value.billingCardBrand &&
+      this.value.billingCardLast4
+    ) {
       this.existingCardData = _.extend({}, this.value);
     }
     this._element = this._elements.create('card', {
@@ -76,7 +82,7 @@ parasails.registerComponent('stripeCardElement', {
       classes: {
         // When the iframe is focused, attach the "pseudofocused" class
         // to our wrapper <div>.
-        focus: 'pseudofocused'
+        focus: 'pseudofocused',
       },
       // iframe styles:
       // > https://stripe.com/docs/js/appendix/style?type=card
@@ -87,7 +93,8 @@ parasails.registerComponent('stripeCardElement', {
           fontSize: '16px',
           color: '#495057',
           iconColor: '#14acc2',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           '::placeholder': {
             color: '#6c757d',
           },
@@ -103,14 +110,16 @@ parasails.registerComponent('stripeCardElement', {
     //  fetching a new token. Then in userland, the validation error for a missing
     //  card becomes something reasonable that implies that we may not have finished
     //  getting it yet, so hold your horses.
-    this._element.on('change', (stripeEvent)=> {
+    this._element.on('change', (stripeEvent) => {
       // If there is an error, set the v-model to be empty.
-      if(stripeEvent.error) {
+      if (stripeEvent.error) {
         this.$emit('input', '');
-      } else if(stripeEvent.complete) {
+      } else if (stripeEvent.complete) {
         // If the field is complete, (aka valid), fetch a token and set that on the v-model
         // (first clearing out the v-model, so this won't be considered valid yet e.g. if it was just changed.
-        if(this.isSyncing) { return; }
+        if (this.isSyncing) {
+          return;
+        }
         this.$emit('');
         this.isSyncing = true;
         this.$emit('update:busy', true);
@@ -118,10 +127,10 @@ parasails.registerComponent('stripeCardElement', {
         this._fetchNewToken();
       } else {
         // FUTURE: possibly handle other events, if necessary.
-      }//ﬁ
-    });//œ
+      } //ﬁ
+    }); //œ
   },
-  beforeDestroy: function (){
+  beforeDestroy: function () {
     // Note: There isn't any documented way to tear down a `stripe` instance.
     // Same thing for the `elements` instance.  Only individual "element" instances
     // can be cleaned up after, using `.unmount()`.
@@ -131,45 +140,45 @@ parasails.registerComponent('stripeCardElement', {
   //  ║╣ ╚╗╔╝║╣ ║║║ ║ ╚═╗
   //  ╚═╝ ╚╝ ╚═╝╝╚╝ ╩ ╚═╝
   methods: {
-    clickChangeExistingCard: function() {
+    clickChangeExistingCard: function () {
       this.existingCardData = undefined;
       this.$emit('input', '');
     },
     // Public method for fetching a fresh token (e.g. if card is declined)
-    doGetNewToken: function() {
+    doGetNewToken: function () {
       this.isSyncing = true;
       this.$emit('update:busy', true);
       this.isValidated = false;
       this.$emit('input', '');
       this._fetchNewToken();
     },
-    _fetchNewToken: function() {
+    _fetchNewToken: function () {
       this._getStripeTokenFromCardElement(this._stripe, this._element)
-      .then((paymentSourceInfo)=>{
-        this.isSyncing = false;
-        this.$emit('update:busy', false);
-        this.isValidated = true;
-        this.$emit('input', paymentSourceInfo);
-      }).catch((err)=>{
-        this.isSyncing = false;
-        this.$emit('update:busy', false);
-        this.isValidated = false;
-        // This error is only relevant if something COMPLETELY unexpected goes wrong,
-        // in which case we want to actually know about that.
-        throw err;
-      });//_∏_
+        .then((paymentSourceInfo) => {
+          this.isSyncing = false;
+          this.$emit('update:busy', false);
+          this.isValidated = true;
+          this.$emit('input', paymentSourceInfo);
+        })
+        .catch((err) => {
+          this.isSyncing = false;
+          this.$emit('update:busy', false);
+          this.isValidated = false;
+          // This error is only relevant if something COMPLETELY unexpected goes wrong,
+          // in which case we want to actually know about that.
+          throw err;
+        }); //_∏_
     },
-    _getStripeTokenFromCardElement: function(stripeInstance, stripeElement) {
+    _getStripeTokenFromCardElement: function (stripeInstance, stripeElement) {
       // Build a Promise & send it back as our "thenable" (AsyncFunction's return value).
       // (this is necessary b/c we're wrapping an api that isn't `await`-compatible)
-      return new Promise((resolve, reject)=>{
+      return new Promise((resolve, reject) => {
         try {
           // Create a stripe token using the Stripe "element".
-          stripeInstance.createToken(stripeElement)
-          .then((result)=>{
+          stripeInstance.createToken(stripeElement).then((result) => {
             // Silently ignore the case where the field is empty, or if there are
             // card validation issues.
-            if(!result || result.error) {
+            if (!result || result.error) {
               resolve();
               return;
             }
@@ -179,14 +188,14 @@ parasails.registerComponent('stripeCardElement', {
               billingCardBrand: result.token.card.brand,
               billingCardLast4: result.token.card.last4,
               billingCardExpMonth: result.token.card.exp_month,
-              billingCardExpYear: result.token.card.exp_year
+              billingCardExpYear: result.token.card.exp_year,
             });
           });
         } catch (err) {
           console.error('Could not obtain Stripe token:', err);
           reject(err);
         }
-      });//_∏_
-    }
-  }
+      }); //_∏_
+    },
+  },
 });

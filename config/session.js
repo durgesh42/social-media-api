@@ -41,6 +41,5 @@ module.exports.session = {
   adapter: 'connect-mongo', // Use the connect-mongo adapter to store session data in MongoDB
   url: 'mongodb://localhost:27017/social-media-app', // URL of the MongoDB server
   collection: 'sessions', // Collection in the MongoDB database where session data will be stored
-  stringify: false   // <---- the fix
-
+  stringify: false, // <---- the fix
 };
