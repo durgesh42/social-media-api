@@ -75,11 +75,11 @@ module.exports.routes = {
 
   // CUSTOM WEB API
 
-  'GET /users': { action: 'User/index' },
+  'GET /users': { action: 'User/list-users' },
   'GET /me': { action: 'User/me' },
   'GET /posts': { action: 'Post/home' },
   'POST /post': { action: 'Post/create', csrf: false },
-  'PUT /follow/:id': { action: 'User/follow', csrf: false },
+  'PUT /follow/:id': { action: 'User/follow-user', csrf: false },
   'PUT /unfollow/:id': { action: 'User/unfollow', csrf: false },
   'DELETE /post/:id': 'Post/delete',
   

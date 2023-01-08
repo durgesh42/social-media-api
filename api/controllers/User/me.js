@@ -1,10 +1,22 @@
-module.exports = async (req, res) => {
-  const userID = req.session.userId;
-  console.log('MY Profile', userID);
+module.exports = {
+  friendlyName: 'Show my profile',
 
-  const myProfile = await User.findOne(userID)
-    .populate('followers')
-    .populate('following');
+  description: `Display the logged-in user's profile`,
 
-  res.json(myProfile);
+  exits: {
+    success: {
+      description: 'User profile was retrieved successfully',
+      outputType: 'ref',
+    },
+  },
+
+  fn: async function (inputs, exits) {
+    const userId = this.req.session.userId;
+
+    const myProfile = await User.findOne(userId)
+      .populate('followers')
+      .populate('following');
+
+    return exits.success(myProfile);
+  },
 };
