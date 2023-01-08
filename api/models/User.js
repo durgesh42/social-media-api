@@ -11,6 +11,8 @@ module.exports = {
       id: this.id,
       name: this.fullName,
       email: this.emailAddress,
+      following: this.following,
+      followers: this.followers,
     };
   },
 
@@ -187,5 +189,13 @@ without necessarily having a billing card.`,
     //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
     //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
     // n/a
+
+    following: {
+      collection: 'user',
+    },
+
+    followers: {
+      collection: 'user',
+    },
   },
 };

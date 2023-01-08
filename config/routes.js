@@ -73,10 +73,14 @@ module.exports.routes = {
     hasSocketFeatures: true,
   },
 
-  'GET /users': { action: 'User/index' },
+  // CUSTOM WEB API
 
+  'GET /users': { action: 'User/index' },
+  'GET /me': { action: 'User/me' },
   'GET /posts': { action: 'Post/home' },
-  
   'POST /post': { action: 'Post/create', csrf: false },
+  'PUT /follow/:id': { action: 'User/follow', csrf: false },
+  'PUT /unfollow/:id': { action: 'User/unfollow', csrf: false },
   'DELETE /post/:id': 'Post/delete',
+  
 };
