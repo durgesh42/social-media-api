@@ -8,7 +8,6 @@
  */
 
 parasails.registerComponent('account-notification-banner', {
-
   //  ╔═╗╦ ╦╔╗ ╦  ╦╔═╗  ╔═╗╦═╗╔═╗╔═╗╔═╗
   //  ╠═╝║ ║╠╩╗║  ║║    ╠═╝╠╦╝║ ║╠═╝╚═╗
   //  ╩  ╚═╝╚═╝╩═╝╩╚═╝  ╩  ╩╚═╚═╝╩  ╚═╝
@@ -24,7 +23,6 @@ parasails.registerComponent('account-notification-banner', {
     };
   },
 
-
   //  ╦ ╦╔╦╗╔╦╗╦
   //  ╠═╣ ║ ║║║║
   //  ╩ ╩ ╩ ╩ ╩╩═╝
@@ -38,41 +36,41 @@ parasails.registerComponent('account-notification-banner', {
   </div>
   `,
 
-
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
-  mounted: async function() {
+  mounted: async function () {
     await Cloud.observeMySession();
     // Listen for updates to the user's session
-    Cloud.on('session', (msg)=>{
-      if(msg.notificationText) {
+    Cloud.on('session', (msg) => {
+      if (msg.notificationText) {
         this.notificationText = msg.notificationText;
       } else {
         this.notificationText = '';
       }
-    });//œ
+    }); //œ
   },
 
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     Cloud.off('session');
   },
 
   watch: {
-    loggedInUserId: function(unused) { throw new Error('Changes to `loggedInUserId` are not currently supported in <account-notification-banner>!'); },
+    loggedInUserId: function (unused) {
+      throw new Error(
+        'Changes to `loggedInUserId` are not currently supported in <account-notification-banner>!'
+      );
+    },
   },
 
   //  ╦╔╗╔╔╦╗╔═╗╦═╗╔═╗╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
   //  ║║║║ ║ ║╣ ╠╦╝╠═╣║   ║ ║║ ║║║║╚═╗
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
-
     //  ╦╔╗╔╔╦╗╔═╗╦═╗╔╗╔╔═╗╦    ╔═╗╦  ╦╔═╗╔╗╔╔╦╗  ╦ ╦╔═╗╔╗╔╔╦╗╦  ╔═╗╦═╗╔═╗
     //  ║║║║ ║ ║╣ ╠╦╝║║║╠═╣║    ║╣ ╚╗╔╝║╣ ║║║ ║   ╠═╣╠═╣║║║ ║║║  ║╣ ╠╦╝╚═╗
     //  ╩╝╚╝ ╩ ╚═╝╩╚═╝╚╝╩ ╩╩═╝  ╚═╝ ╚╝ ╚═╝╝╚╝ ╩   ╩ ╩╩ ╩╝╚╝═╩╝╩═╝╚═╝╩╚═╚═╝
-
     //…
-
     //  ╔═╗╦ ╦╔╗ ╦  ╦╔═╗  ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗
     //  ╠═╝║ ║╠╩╗║  ║║    ║║║║╣  ║ ╠═╣║ ║ ║║╚═╗
     //  ╩  ╚═╝╚═╝╩═╝╩╚═╝  ╩ ╩╚═╝ ╩ ╩ ╩╚═╝═╩╝╚═╝
@@ -81,13 +79,9 @@ parasails.registerComponent('account-notification-banner', {
     // > `this.$refs.componentNameInCamelCase.doSomething())`, and, by convention,
     // > are always prefixed with "do".
     // N/A
-
     //  ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗
     //  ╠═╝╠╦╝║╚╗╔╝╠═╣ ║ ║╣   ║║║║╣  ║ ╠═╣║ ║ ║║╚═╗
     //  ╩  ╩╚═╩ ╚╝ ╩ ╩ ╩ ╚═╝  ╩ ╩╚═╝ ╩ ╩ ╩╚═╝═╩╝╚═╝
-
     //…
-
-  }
-
+  },
 });

@@ -1,32 +1,49 @@
 /**
  * @description :: The conventional "custom" hook.  Extends this app with custom server-start-time and request-time logic.
+ * @explanation :: 
+ * This is a custom hook in a Sails.js application. A hook in Sails is a module that extends the core functionality of the framework by adding custom logic that runs at      specific points in the Sails lifecycle.
+ * The custom hook in this example is intended to add custom server-start-time and request-time logic to the application. It defines an initialize function that runs when the Sails app loads/lifts.
+ * The initialize function first logs a message to the console to indicate that the hook is initializing. It then checks the configuration for Stripe and Sendgrid (for billing and emails) to make sure that important configuration values have been set. If any of these values are missing, it logs a warning message to the console and sets the enableBillingFeatures config key to false.
+ * After the organics hook has finished initializing, the initialize function configures the Stripe and Sendgrid packs with any available credentials. It also sets up Stripe webhooks to receive events from the Stripe API and sets up an HTTP route to handle these webhooks.
+ * Finally, the initialize function sets up a cron job to send emails to users on a regular basis and registers an action to send email to users on demand.
+ * I hope this helps to clarify the purpose of this code. Let me know if you have any further questions.
+* 
  * @docs        :: https://sailsjs.com/docs/concepts/extending-sails/hooks
  */
 
 module.exports = function defineCustomHook(sails) {
-
   return {
-
     /**
      * Runs when a Sails app loads/lifts.
      */
     initialize: async function () {
-
       sails.log.info('Initializing project hook... (`api/hooks/custom/`)');
 
       // Check Stripe/Sendgrid configuration (for billing and emails).
       var IMPORTANT_STRIPE_CONFIG = ['stripeSecret', 'stripePublishableKey'];
-      var IMPORTANT_SENDGRID_CONFIG = ['sendgridSecret', 'internalEmailAddress'];
-      var isMissingStripeConfig = _.difference(IMPORTANT_STRIPE_CONFIG, Object.keys(sails.config.custom)).length > 0;
-      var isMissingSendgridConfig = _.difference(IMPORTANT_SENDGRID_CONFIG, Object.keys(sails.config.custom)).length > 0;
+      var IMPORTANT_SENDGRID_CONFIG = [
+        'sendgridSecret',
+        'internalEmailAddress',
+      ];
+      var isMissingStripeConfig =
+        _.difference(IMPORTANT_STRIPE_CONFIG, Object.keys(sails.config.custom))
+          .length > 0;
+      var isMissingSendgridConfig =
+        _.difference(
+          IMPORTANT_SENDGRID_CONFIG,
+          Object.keys(sails.config.custom)
+        ).length > 0;
 
       if (isMissingStripeConfig || isMissingSendgridConfig) {
-
-        let missingFeatureText = isMissingStripeConfig && isMissingSendgridConfig ? 'billing and email' : isMissingStripeConfig ? 'billing' : 'email';
+        let missingFeatureText =
+          isMissingStripeConfig && isMissingSendgridConfig
+            ? 'billing and email'
+            : isMissingStripeConfig
+            ? 'billing'
+            : 'email';
         let suffix = '';
         if (_.contains(['silly'], sails.config.log.level)) {
-          suffix =
-`
+          suffix = `
 > Tip: To exclude sensitive credentials from source control, use:
 > • config/local.js (for local development)
 > • environment variables (for production)
@@ -42,20 +59,28 @@ module.exports = function defineCustomHook(sails) {
 
         let problems = [];
         if (sails.config.custom.stripeSecret === undefined) {
-          problems.push('No `sails.config.custom.stripeSecret` was configured.');
+          problems.push(
+            'No `sails.config.custom.stripeSecret` was configured.'
+          );
         }
         if (sails.config.custom.stripePublishableKey === undefined) {
-          problems.push('No `sails.config.custom.stripePublishableKey` was configured.');
+          problems.push(
+            'No `sails.config.custom.stripePublishableKey` was configured.'
+          );
         }
         if (sails.config.custom.sendgridSecret === undefined) {
-          problems.push('No `sails.config.custom.sendgridSecret` was configured.');
+          problems.push(
+            'No `sails.config.custom.sendgridSecret` was configured.'
+          );
         }
         if (sails.config.custom.internalEmailAddress === undefined) {
-          problems.push('No `sails.config.custom.internalEmailAddress` was configured.');
+          problems.push(
+            'No `sails.config.custom.internalEmailAddress` was configured.'
+          );
         }
 
         sails.log.verbose(
-`Some optional settings have not been configured yet:
+          `Some optional settings have not been configured yet:
 ---------------------------------------------------------------------
 ${problems.join('\n')}
 
@@ -63,8 +88,9 @@ Until this is addressed, this app's ${missingFeatureText} features
 will be disabled and/or hidden in the UI.
 
  [?] If you're unsure or need advice, come by https://sailsjs.com/support
----------------------------------------------------------------------${suffix}`);
-      }//ﬁ
+---------------------------------------------------------------------${suffix}`
+        );
+      } //ﬁ
 
       // Set an additional config keys based on whether Stripe config is available.
       // This will determine whether or not to enable various billing features.
@@ -72,10 +98,9 @@ will be disabled and/or hidden in the UI.
 
       // After "sails-hook-organics" finishes initializing, configure Stripe
       // and Sendgrid packs with any available credentials.
-      sails.after('hook:organics:loaded', ()=>{
-
+      sails.after('hook:organics:loaded', () => {
         sails.helpers.stripe.configure({
-          secret: sails.config.custom.stripeSecret
+          secret: sails.config.custom.stripeSecret,
         });
 
         sails.helpers.sendgrid.configure({
@@ -83,17 +108,13 @@ will be disabled and/or hidden in the UI.
           from: sails.config.custom.fromEmailAddress,
           fromName: sails.config.custom.fromName,
         });
-
-      });//_∏_
+      }); //_∏_
 
       // ... Any other app-specific setup code that needs to run on lift,
       // even in production, goes here ...
-
     },
 
-
     routes: {
-
       /**
        * Runs before every matching route.
        *
@@ -104,19 +125,19 @@ will be disabled and/or hidden in the UI.
       before: {
         '/*': {
           skipAssets: true,
-          fn: async function(req, res, next){
-
+          fn: async function (req, res, next) {
             var url = require('url');
 
             // First, if this is a GET request (and thus potentially a view),
             // attach a couple of guaranteed locals.
             if (req.method === 'GET') {
-
               // The  `_environment` local lets us do a little workaround to make Vue.js
               // run in "production mode" without unnecessarily involving complexities
               // with webpack et al.)
               if (res.locals._environment !== undefined) {
-                throw new Error('Cannot attach Sails environment as the view local `_environment`, because this view local already exists!  (Is it being attached somewhere else?)');
+                throw new Error(
+                  'Cannot attach Sails environment as the view local `_environment`, because this view local already exists!  (Is it being attached somewhere else?)'
+                );
               }
               res.locals._environment = sails.config.environment;
 
@@ -125,10 +146,12 @@ will be disabled and/or hidden in the UI.
               // > Note that, depending on the request, this may or may not be set to the
               // > logged-in user record further below.
               if (res.locals.me !== undefined) {
-                throw new Error('Cannot attach view local `me`, because this view local already exists!  (Is it being attached somewhere else?)');
+                throw new Error(
+                  'Cannot attach view local `me`, because this view local already exists!  (Is it being attached somewhere else?)'
+                );
               }
               res.locals.me = undefined;
-            }//ﬁ
+            } //ﬁ
 
             // Next, if we're running in our actual "production" or "staging" Sails
             // environment, check if this is a GET request via some other host,
@@ -144,12 +167,28 @@ will be disabled and/or hidden in the UI.
             // > case you want to run it on a real, physical mobile/IoT device)
             var configuredBaseHostname;
             try {
-              configuredBaseHostname = url.parse(sails.config.custom.baseUrl).host;
-            } catch (unusedErr) { /*…*/}
-            if ((sails.config.environment === 'staging' || sails.config.environment === 'production') && !req.isSocket && req.method === 'GET' && req.hostname !== configuredBaseHostname) {
-              sails.log.info('Redirecting GET request from `'+req.hostname+'` to configured expected host (`'+configuredBaseHostname+'`)...');
-              return res.redirect(sails.config.custom.baseUrl+req.url);
-            }//•
+              configuredBaseHostname = url.parse(
+                sails.config.custom.baseUrl
+              ).host;
+            } catch (unusedErr) {
+              /*…*/
+            }
+            if (
+              (sails.config.environment === 'staging' ||
+                sails.config.environment === 'production') &&
+              !req.isSocket &&
+              req.method === 'GET' &&
+              req.hostname !== configuredBaseHostname
+            ) {
+              sails.log.info(
+                'Redirecting GET request from `' +
+                  req.hostname +
+                  '` to configured expected host (`' +
+                  configuredBaseHostname +
+                  '`)...'
+              );
+              return res.redirect(sails.config.custom.baseUrl + req.url);
+            } //•
 
             // Prevent the browser from caching logged-in users' pages.
             // (including w/ the Chrome back button)
@@ -165,35 +204,48 @@ will be disabled and/or hidden in the UI.
 
             // No session? Proceed as usual.
             // (e.g. request for a static asset)
-            if (!req.session) { return next(); }
+            if (!req.session) {
+              return next();
+            }
 
             // Not logged in? Proceed as usual.
-            if (!req.session.userId) { return next(); }
+            if (!req.session.userId) {
+              return next();
+            }
 
             // Otherwise, look up the logged-in user.
             var loggedInUser = await User.findOne({
-              id: req.session.userId
+              id: req.session.userId,
             });
 
             // If the logged-in user has gone missing, log a warning,
             // wipe the user id from the requesting user agent's session,
             // and then send the "unauthorized" response.
             if (!loggedInUser) {
-              sails.log.warn('Somehow, the user record for the logged-in user (`'+req.session.userId+'`) has gone missing....');
+              sails.log.warn(
+                'Somehow, the user record for the logged-in user (`' +
+                  req.session.userId +
+                  '`) has gone missing....'
+              );
               delete req.session.userId;
               return res.unauthorized();
             }
 
             // Add additional information for convenience when building top-level navigation.
             // (i.e. whether to display "Dashboard", "My Account", etc.)
-            if (!loggedInUser.password || loggedInUser.emailStatus === 'unconfirmed') {
+            if (
+              !loggedInUser.password ||
+              loggedInUser.emailStatus === 'unconfirmed'
+            ) {
               loggedInUser.dontDisplayAccountLinkInNav = true;
             }
 
             // Expose the user record as an extra property on the request object (`req.me`).
             // > Note that we make sure `req.me` doesn't already exist first.
             if (req.me !== undefined) {
-              throw new Error('Cannot attach logged-in user as `req.me` because this property already exists!  (Is it being attached somewhere else?)');
+              throw new Error(
+                'Cannot attach logged-in user as `req.me` because this property already exists!  (Is it being attached somewhere else?)'
+              );
             }
             req.me = loggedInUser;
 
@@ -201,28 +253,38 @@ will be disabled and/or hidden in the UI.
             // to the current timestamp.
             //
             // (Note: As an optimization, this is run behind the scenes to avoid adding needless latency.)
-            var MS_TO_BUFFER = 60*1000;
+            var MS_TO_BUFFER = 60 * 1000;
             var now = Date.now();
             if (loggedInUser.lastSeenAt < now - MS_TO_BUFFER) {
-              User.updateOne({id: loggedInUser.id})
-              .set({ lastSeenAt: now })
-              .exec((err)=>{
-                if (err) {
-                  sails.log.error('Background task failed: Could not update user (`'+loggedInUser.id+'`) with a new `lastSeenAt` timestamp.  Error details: '+err.stack);
-                  return;
-                }//•
-                sails.log.verbose('Updated the `lastSeenAt` timestamp for user `'+loggedInUser.id+'`.');
-                // Nothing else to do here.
-              });//_∏_  (Meanwhile...)
-            }//ﬁ
-
+              User.updateOne({ id: loggedInUser.id })
+                .set({ lastSeenAt: now })
+                .exec((err) => {
+                  if (err) {
+                    sails.log.error(
+                      'Background task failed: Could not update user (`' +
+                        loggedInUser.id +
+                        '`) with a new `lastSeenAt` timestamp.  Error details: ' +
+                        err.stack
+                    );
+                    return;
+                  } //•
+                  sails.log.verbose(
+                    'Updated the `lastSeenAt` timestamp for user `' +
+                      loggedInUser.id +
+                      '`.'
+                  );
+                  // Nothing else to do here.
+                }); //_∏_  (Meanwhile...)
+            } //ﬁ
 
             // If this is a GET request, then also expose an extra view local (`<%= me %>`).
             // > Note that we make sure a local named `me` doesn't already exist first.
             // > Also note that we strip off any properties that correspond with protected attributes.
             if (req.method === 'GET') {
               if (res.locals.me !== undefined) {
-                throw new Error('Cannot attach logged-in user as the view local `me`, because this view local already exists!  (Is it being attached somewhere else?)');
+                throw new Error(
+                  'Cannot attach logged-in user as the view local `me`, because this view local already exists!  (Is it being attached somewhere else?)'
+                );
               }
 
               // Exclude any fields corresponding with attributes that have `protect: true`.
@@ -232,26 +294,26 @@ will be disabled and/or hidden in the UI.
               // If there is still a "password" in sanitized user data, then delete it just to be safe.
               // (But also log a warning so this isn't hopelessly confusing.)
               if (sanitizedUser.password) {
-                sails.log.warn('The logged in user record has a `password` property, but it was still there after pruning off all properties that match `protect: true` attributes in the User model.  So, just to be safe, removing the `password` property anyway...');
+                sails.log.warn(
+                  'The logged in user record has a `password` property, but it was still there after pruning off all properties that match `protect: true` attributes in the User model.  So, just to be safe, removing the `password` property anyway...'
+                );
                 delete sanitizedUser.password;
-              }//ﬁ
+              } //ﬁ
 
               res.locals.me = sanitizedUser;
 
               // Include information on the locals as to whether billing features
               // are enabled for this app, and whether email verification is required.
-              res.locals.isBillingEnabled = sails.config.custom.enableBillingFeatures;
-              res.locals.isEmailVerificationRequired = sails.config.custom.verifyEmailAddresses;
-
-            }//ﬁ
+              res.locals.isBillingEnabled =
+                sails.config.custom.enableBillingFeatures;
+              res.locals.isEmailVerificationRequired =
+                sails.config.custom.verifyEmailAddresses;
+            } //ﬁ
 
             return next();
-          }
-        }
-      }
-    }
-
-
+          },
+        },
+      },
+    },
   };
-
 };

@@ -7,18 +7,22 @@ parasails.registerPage('contact', {
     syncing: false,
 
     // Form data
-    formData: { /* … */ },
+    formData: {
+      /* … */
+    },
 
     // For tracking client-side validation errors in our form.
     // > Has property set to `true` for each invalid property in `formData`.
-    formErrors: { /* … */ },
+    formErrors: {
+      /* … */
+    },
 
     // Form rules
     formRules: {
-      emailAddress: {isEmail: true, required: true},
-      fullName: {required: true},
-      topic: {required: true},
-      message: {required: true},
+      emailAddress: { isEmail: true, required: true },
+      fullName: { required: true },
+      topic: { required: true },
+      message: { required: true },
     },
 
     // Server error state for the form
@@ -31,10 +35,10 @@ parasails.registerPage('contact', {
   //  ╦  ╦╔═╗╔═╗╔═╗╦ ╦╔═╗╦  ╔═╗
   //  ║  ║╠╣ ║╣ ║  ╚╦╝║  ║  ║╣
   //  ╩═╝╩╚  ╚═╝╚═╝ ╩ ╚═╝╩═╝╚═╝
-  beforeMount: function() {
+  beforeMount: function () {
     //…
   },
-  mounted: async function() {
+  mounted: async function () {
     //…
   },
 
@@ -42,13 +46,9 @@ parasails.registerPage('contact', {
   //  ║║║║ ║ ║╣ ╠╦╝╠═╣║   ║ ║║ ║║║║╚═╗
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
-
-    submittedForm: async function() {
-
+    submittedForm: async function () {
       // Show the success message.
       this.cloudSuccess = true;
-
     },
-
-  }
+  },
 });
