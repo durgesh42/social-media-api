@@ -1,15 +1,38 @@
-module.exports = async (req, res) => {
-  try {
-    const userId = req.session.userId;
+module.exports = {
+  friendlyName: 'Create post',
+  description: `Create a post`,
 
-    await Post.create({
-      title: req.body.title,
-      body: req.body.body,
-      user: userId,
-    });
+  inputs: {
+    title: {
+      type: 'string',
+      required: true,
+      description: 'Title of post',
+    },
+    body: {
+      type: 'string',
+      required: true,
+      description: 'Body of post',
+    },
+  },
 
-    res.json({ msg: 'Post successfully created' });
-  } catch (error) {
-    res.json({ msg: error.msg });
-  }
+  exits: {
+    success: {
+      description: 'Post was successfully created',
+    },
+  },
+
+  fn: async function (inputs, exits) {
+    try {
+      const userId = this.req.session.userId;
+
+      await Post.create({
+        title: inputs.title,
+        body: inputs.body,
+        user: userId,
+      });
+      return exits.success({ msg: 'Post successfully created' });
+    } catch (error) {
+      return exits({ msg: error.message });
+    }
+  },
 };
