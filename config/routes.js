@@ -33,11 +33,6 @@ module.exports.routes = {
   'GET /account/password': { action: 'account/view-edit-password' },
   'GET /account/profile': { action: 'account/view-edit-profile' },
 
-  'GET /users': { action: 'User/index' },
-
-  'GET /posts': { action: 'Post/home' },
-  'POST /post': { action: 'Post/create', csrf: false },
-
   //  ╔╦╗╦╔═╗╔═╗  ╦═╗╔═╗╔╦╗╦╦═╗╔═╗╔═╗╔╦╗╔═╗   ┬   ╔╦╗╔═╗╦ ╦╔╗╔╦  ╔═╗╔═╗╔╦╗╔═╗
   //  ║║║║╚═╗║    ╠╦╝║╣  ║║║╠╦╝║╣ ║   ║ ╚═╗  ┌┼─   ║║║ ║║║║║║║║  ║ ║╠═╣ ║║╚═╗
   //  ╩ ╩╩╚═╝╚═╝  ╩╚═╚═╝═╩╝╩╩╚═╚═╝╚═╝ ╩ ╚═╝  └┘   ═╩╝╚═╝╚╩╝╝╚╝╩═╝╚═╝╩ ╩═╩╝╚═╝
@@ -77,4 +72,11 @@ module.exports.routes = {
     action: 'observe-my-session',
     hasSocketFeatures: true,
   },
+
+  'GET /users': { action: 'User/index' },
+
+  'GET /posts': { action: 'Post/home' },
+  
+  'POST /post': { action: 'Post/create', csrf: false },
+  'DELETE /post/:id': 'Post/delete',
 };
